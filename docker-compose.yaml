@@ -4,8 +4,11 @@ services:
   frontend:
     build:
       context: ./frontend  # Diretório do frontend
+      args:
+        REACT_APP_DNS: ${REACT_APP_DNS}  # Passa a variável de ambiente para o build do frontend
+        REACT_APP_PORT: ${REACT_APP_PORT}  # Passa a variável de ambiente para o build do frontend
     ports:
-      - "80:80"  # Expõe a porta 80 do contêiner para a porta 80 do host
+      - "81:80"  # Expõe a porta 80 do contêiner para a porta 80 do host
     networks:
       - todo-net
     depends_on:
@@ -24,15 +27,19 @@ services:
   mongo:
     build:
       context: ./banco-de-dados  # Diretório do backend
+      args:
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+        MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     container_name: mongo-todo
     ports:
       - "27017:27017"
     networks:
       - todo-net
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
-      - MONGO_INITDB_DATABASE=todo-app
+      - MONGO_INITDB_ROOT_USERNAME=MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=MONGO_INITDB_ROOT_PASSWORD
+      - MONGO_INITDB_DATABASE=MONGO_INITDB_DATABASE
 
 
 networks:

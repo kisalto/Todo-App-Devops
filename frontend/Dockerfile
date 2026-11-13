@@ -4,6 +4,11 @@ FROM node:18-alpine as build
 # Definindo o diretório de trabalho dentro do container
 WORKDIR /app
 
+ARG REACT_APP_DNS
+ARG REACT_APP_PORT
+ENV REACT_APP_DNS=$REACT_APP_DNS
+ENV REACT_APP_PORT=$REACT_APP_PORT
+
 # Copiando o package.json e o package-lock.json para instalar as dependências
 COPY package*.json ./
 
@@ -23,7 +28,7 @@ FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
 
 # Expondo a porta 80 para acesso à aplicação
-EXPOSE 80
+EXPOSE 81
 
 # Comando para iniciar o Nginx e servir a aplicação
 CMD ["nginx", "-g", "daemon off;"]

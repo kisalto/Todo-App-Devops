@@ -2,20 +2,23 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
+const URL = process.env.REACT_APP_DNS || 'http://localhost';
+const PORT = process.env.REACT_APP_PORT || '5000';
+
 function App() {
   const [todos, setTodos] = useState([]);
   const [task, setTask] = useState("");
 
   // Função para carregar os todos da API
   const fetchTodos = async () => {
-    const response = await axios.get('http://localhost:5000/todos');
+    const response = await axios.get(`${URL}:${PORT}/todos`);
     setTodos(response.data);
   };
 
   // Função para adicionar uma nova tarefa
   const addTodo = async () => {
     if (task.trim()) {
-      const response = await axios.post('http://localhost:5000/todos', { text: task });
+      const response = await axios.post(`${URL}:${PORT}/todos`, { text: task });
       setTodos([...todos, response.data]);
       setTask("");
     }
@@ -23,7 +26,7 @@ function App() {
 
   // Função para marcar a tarefa como concluída
   const toggleComplete = async (id) => {
-    const response = await axios.patch(`http://localhost:5000/todos/${id}`);
+    const response = await axios.patch(`${URL}:${PORT}/todos/${id}`);
     const updatedTodos = todos.map(todo =>
       todo._id === id ? response.data : todo
     );
@@ -32,7 +35,7 @@ function App() {
 
   // Função para excluir a tarefa
   const deleteTodo = async (id) => {
-    await axios.delete(`http://localhost:5000/todos/${id}`);
+    await axios.delete(`${URL}:${PORT}/todos/${id}`);
     setTodos(todos.filter(todo => todo._id !== id));
   };
 
