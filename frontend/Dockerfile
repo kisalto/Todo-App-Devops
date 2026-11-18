@@ -4,11 +4,6 @@ FROM node:18-alpine as build
 # Definindo o diretório de trabalho dentro do container
 WORKDIR /app
 
-ARG REACT_APP_DNS
-ARG REACT_APP_PORT
-ENV REACT_APP_DNS=$REACT_APP_DNS
-ENV REACT_APP_PORT=$REACT_APP_PORT
-
 # Copiando o package.json e o package-lock.json para instalar as dependências
 COPY package*.json ./
 
@@ -23,12 +18,13 @@ RUN npm run build
 
 # Etapa 2: Servindo a aplicação
 FROM nginx:alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copiando o build da etapa anterior para o diretório padrão do Nginx
 COPY --from=build /app/build /usr/share/nginx/html
 
 # Expondo a porta 80 para acesso à aplicação
-EXPOSE 81
+EXPOSE 80
 
 # Comando para iniciar o Nginx e servir a aplicação
 CMD ["nginx", "-g", "daemon off;"]

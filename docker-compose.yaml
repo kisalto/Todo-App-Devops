@@ -1,47 +1,35 @@
-version: '3.8'
-
 services:
   frontend:
-    build:
-      context: ./frontend  # Diretório do frontend
-      args:
-        REACT_APP_DNS: ${REACT_APP_DNS}  # Passa a variável de ambiente para o build do frontend
-        REACT_APP_PORT: ${REACT_APP_PORT}  # Passa a variável de ambiente para o build do frontend
+    build: ./frontend
     ports:
-      - "81:80"  # Expõe a porta 80 do contêiner para a porta 80 do host
-    networks:
-      - todo-net
-    depends_on:
-      - backend  # Garante que o backend esteja rodando antes de subir o frontend
+      - "80:80"  # Expõe a porta 80 do contêiner para a porta 80 do host
+    restart: unless-stopped
+    depends_on: [backend]  # Garante que o backend esteja rodando antes de subir o frontend
+    networks: [todo-net]
 
   backend:
-    build:
-      context: ./backend  # Diretório do backend
-    ports:
-      - "5000:5000"  # Expõe a porta 5000 do contêiner para a porta 5000 do host
-    networks:
-      - todo-net
-    depends_on:
-      - mongo  # Garante que o MongoDB esteja rodando antes de iniciar o backend
+    build: ./backend
+    environment:
+      - MONGO_URI=${MONGO_URI}
+    restart: unless-stopped
+    networks: [todo-net]
+    depends_on: [mongo]  # Garante que o MongoDB esteja rodando antes de iniciar o backend
 
   mongo:
-    build:
-      context: ./banco-de-dados  # Diretório do backend
-      args:
-        MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-        MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    build: ./banco-de-dados
     container_name: mongo-todo
     ports:
       - "27017:27017"
-    networks:
-      - todo-net
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=MONGO_INITDB_ROOT_USERNAME
-      - MONGO_INITDB_ROOT_PASSWORD=MONGO_INITDB_ROOT_PASSWORD
-      - MONGO_INITDB_DATABASE=MONGO_INITDB_DATABASE
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+    restart: unless-stopped
+    networks: [todo-net]
 
+volumes:
+  mongo_data:
 
 networks:
   todo-net:
-    driver: bridge
