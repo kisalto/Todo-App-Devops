@@ -8,12 +8,12 @@ const app = express();
 const port = 5000;
 
 // Conexão com o MongoDB (com autenticação)
-mongoose.connect('mongodb://root:rootpassword@mongo-todo:27017/todo-app?authSource=admin', {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
   .then(() => console.log('Conectado ao MongoDB'))
-  .catch((err) => console.error('Erro ao conectar ao MongoDB:', err));
+  .catch((err) => console.error('Erro ao conectar ao MongoDB:', err), process.exit(1));
 
 // Middleware para habilitar CORS e processar JSON
 app.use(cors());
