@@ -13,7 +13,10 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true,
 })
   .then(() => console.log('Conectado ao MongoDB'))
-  .catch((err) => console.error('Erro ao conectar ao MongoDB:', err), process.exit(1));
+  .catch((err) => {
+    console.error('Erro ao conectar ao MongoDB:', err.message);
+    process.exit(1);
+  });
 
 // Middleware para habilitar CORS e processar JSON
 app.use(cors());
